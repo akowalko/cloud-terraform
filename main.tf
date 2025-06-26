@@ -28,7 +28,7 @@ resource "google_compute_instance" "k8s_node" {
 
   network_interface {
     network    = google_compute_network.vpc_network.id
-    subnetwork = google_compute_subnetwork.subnet.id
+    subnetwork = google_compute_subnetwork.test-subnetwork.id
     access_config {} # Enables external IP
   }
 
