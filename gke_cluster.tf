@@ -1,29 +1,16 @@
-resource "google_container_cluster" "primary" {
-  name               = "gke-cluster"
-  location           = "us-central1"
-  remove_default_node_pool = true
-  initial_node_count       = 1
+resource "google_container_cluster" "default" {
+  name = "example-autopilot-cluster"
 
-  network    = google_compute_network.vpc_network.name
-  subnetwork = google_compute_subnetwork.subnetwork.name
-}
+  location                 = "us-central1"
+  enable_autopilot         = true
+  enable_l4_ilb_subsetting = true
 
-resource "google_container_node_pool" "primary_nodes" {
-  name       = "primary-node-pool"
-  cluster    = google_container_cluster.primary.name
-  location   = var.region
+  network    = google_compute_network.vpc_network.id
+  subnetwork = google_compute_subnetwork.subnetwork.id
 
-  node_count = 2
 
-  node_config {
-    machine_type = "e2-medium"
-    disk_size_gb = 20
-    disk_type    = "pd-balanced"
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
-    metadata = {
-      disable-legacy-endpoints = "true"
-    }
-  }
+
+  # Set `deletion_protection` to `true` will ensure that one cannot
+  # accidentally delete this instance by use of Terraform.
+  deletion_protection = false
 }
