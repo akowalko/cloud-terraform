@@ -1,23 +1,37 @@
-name: Auto Thank for New Issue
+name: Auto Thank and Label New Issue
 
 on:
   issues:
     types: [opened]
 
+  workflow_dispatch: 
+
 jobs:
-  add-comment:
+  handle-new-issue:
     runs-on: ubuntu-latest
     permissions:
-      issues: write  # potrzebne do pisania komentarzy
+      issues: write  # potrzebne do komentarzy i labeli
     steps:
       - name: Add thank you comment
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: "Dziękujemy za zgłoszenie issue! 🚀 Zespół wkrótce się nim zajmie. 🙌"
-            })
+            });
+
+      - name: Add todo-review label
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["todo-review"]
+            });
